@@ -56,67 +56,54 @@ public class Generator {
 	private static void generateTree() throws IOException {
 		Path target = initDirectory("com.github.ruediste.salta.benchmark.tree");
 
-		generateTree(target, 5, "", new TreeConfig(Visibility.PUBLIC,
-				Injection.CONSTRUCTOR));
-	}
-
-	enum Visibility {
-		PUBLIC("public"), PROTECTED("protected"), PACKAGE(""), PRIVATE(
-				"private");
-		public String keyword;
-
-		private Visibility(String keyword) {
-			this.keyword = keyword;
-		}
-	}
-
-	enum Injection {
-		CONSTRUCTOR, FIELD, METHOD
-	}
-
-	static class TreeConfig {
-		Visibility visibility;
-		Injection injection;
-
-		public TreeConfig(Visibility visibility, Injection injection) {
-			super();
-			this.visibility = visibility;
-			this.injection = injection;
-		}
-
+		for (Visibility v : Visibility.values())
+			for (Injection i : Injection.values()) {
+				TreeConfig config = new TreeConfig(v, i);
+				generateTree(target, 3, config.toString(), config);
+			}
 	}
 
 	private static void generateTree(Path target, int depth, String name,
 			TreeConfig config) throws IOException {
 
+		int childCount = 5;
 		if (depth > 0)
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < childCount; i++) {
 				generateTree(target, depth - 1, name + i, config);
 			}
 
 		BufferedWriter writer = Files.newBufferedWriter(
-				target.resolve("Node" + name + ".java"),
-				Charset.forName("UTF-8"), StandardOpenOption.CREATE);
+				target.resolve(name + ".java"), Charset.forName("UTF-8"),
+				StandardOpenOption.CREATE);
 
-		writer.append("package com.github.ruediste.salta.benchmark.tree;");
-		writer.append("import javax.inject.Inject;");
+		writer.append("package com.github.ruediste.salta.benchmark.tree;\n");
 		writer.append("public class " + name + "{");
 
 		if (depth > 0)
 			switch (config.injection) {
 			case CONSTRUCTOR:
-				writer.append("@Inject");
-				writer.append(config.visibility.keyword + " Node" + name + "(");
-				for (int i = 0; i < 5; i++) {
+				writer.append("@javax.inject.Inject\n");
+				writer.append(config.visibility.keyword + " " + name + "(");
+				for (int i = 0; i < childCount; i++) {
 					if (i > 0)
 						writer.append(",\n");
-					writer.append("Node" + name + i + " arg" + i);
+					writer.append(name + i + " arg" + i);
 				}
-				writer.append("){}");
+				writer.append("){}\n");
 				break;
 			case FIELD:
+				for (int i = 0; i < childCount; i++) {
+					writer.append("@javax.inject.Inject\n");
+					writer.append(config.visibility.keyword + " " + name + i
+							+ " field" + i + ";\n");
+				}
 				break;
 			case METHOD:
+				for (int i = 0; i < childCount; i++) {
+					writer.append("@javax.inject.Inject\n");
+					writer.append(config.visibility.keyword + " void method"
+							+ i + "(" + name + i + " arg){}\n");
+				}
 				break;
 			default:
 				throw new UnsupportedOperationException();
