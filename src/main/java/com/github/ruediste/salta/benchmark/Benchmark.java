@@ -19,10 +19,9 @@ public class Benchmark {
 	private static void treeBenchmark() throws ClassNotFoundException {
 		com.google.inject.Injector guice = Guice.createInjector();
 
-		// for (Visibility v : Visibility.values())
-		// for (Injection i : Injection.values()) {
-		{
-			Visibility v = Visibility.PROTECTED;
+		for (Visibility v : Visibility.values()) {
+			// for (Injection i : Injection.values()) {
+			// Visibility v = Visibility.PROTECTED;
 			Injection i = Injection.METHOD;
 
 			TreeConfig config = new TreeConfig(v, i);
@@ -43,11 +42,12 @@ public class Benchmark {
 					}
 				}, new JSR330Module());
 				double saltaSpeed = benchmark("Salta Tree " + injectionStrategy
-						+ config.toString(), () -> salta.getInstance(rootClass));
-				System.out.printf("%40s: %f\n", "Salta/Guice", saltaSpeed
+						+ " " + config.toString(),
+						() -> salta.getInstance(rootClass));
+				System.out.printf("%60s: %f\n", "Salta/Guice", saltaSpeed
 						/ guiceSpeed);
-				System.out.println();
 			}
+			System.out.println();
 		}
 	}
 
@@ -68,7 +68,7 @@ public class Benchmark {
 		} while (watch.elapsed(TimeUnit.MILLISECONDS) < 200);
 
 		// run benchmark
-		int repetitions = 3;
+		int repetitions = 1;
 		double sum = 0;
 		for (int i = 0; i < repetitions; i++) {
 			watch.reset().start();
@@ -77,7 +77,7 @@ public class Benchmark {
 			}
 			double t = count * 1000.0 / watch.elapsed(TimeUnit.MILLISECONDS);
 			sum += t;
-			System.out.printf("%40s: %10.3g iterations/s\n", name, t);
+			System.out.printf("%60s: %10.3g iterations/s\n", name, t);
 		}
 
 		return sum / repetitions;
