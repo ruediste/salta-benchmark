@@ -2,7 +2,9 @@ package com.github.ruediste.salta.benchmark;
 
 import java.util.concurrent.TimeUnit;
 
+import com.github.ruediste.salta.AbstractModule;
 import com.github.ruediste.salta.Salta;
+import com.github.ruediste.salta.core.InjectionStrategy;
 import com.github.ruediste.salta.jsr330.JSR330Module;
 import com.github.ruediste.salta.standard.Injector;
 import com.google.common.base.Stopwatch;
@@ -15,25 +17,38 @@ public class Benchmark {
 	}
 
 	private static void treeBenchmark() throws ClassNotFoundException {
-		Injector salta = Salta.createInjector(new JSR330Module());
 		com.google.inject.Injector guice = Guice.createInjector();
 
-		for (Visibility v : Visibility.values())
-			for (Injection i : Injection.values()) {
-				TreeConfig config = new TreeConfig(v, i);
-				Class<?> rootClass = Class
-						.forName("com.github.ruediste.salta.benchmark.tree."
-								+ config.toString());
-				double saltaSpeed = benchmark(
-						"Salta Tree " + config.toString(),
-						() -> salta.getInstance(rootClass));
-				double guiceSpeed = benchmark(
-						"Guice Tree " + config.toString(),
-						() -> guice.getInstance(rootClass));
+		// for (Visibility v : Visibility.values())
+		// for (Injection i : Injection.values()) {
+		{
+			Visibility v = Visibility.PROTECTED;
+			Injection i = Injection.METHOD;
+
+			TreeConfig config = new TreeConfig(v, i);
+			Class<?> rootClass = Class
+					.forName("com.github.ruediste.salta.benchmark.tree."
+							+ config.toString());
+
+			double guiceSpeed = benchmark("Guice Tree " + config.toString(),
+					() -> guice.getInstance(rootClass));
+
+			for (InjectionStrategy injectionStrategy : InjectionStrategy
+					.values()) {
+				Injector salta = Salta.createInjector(new AbstractModule() {
+
+					@Override
+					protected void configure() {
+						getConfiguration().config.injectionStrategy = injectionStrategy;
+					}
+				}, new JSR330Module());
+				double saltaSpeed = benchmark("Salta Tree " + injectionStrategy
+						+ config.toString(), () -> salta.getInstance(rootClass));
 				System.out.printf("%40s: %f\n", "Salta/Guice", saltaSpeed
 						/ guiceSpeed);
 				System.out.println();
 			}
+		}
 	}
 
 	private static double benchmark(String name, Runnable action) {
