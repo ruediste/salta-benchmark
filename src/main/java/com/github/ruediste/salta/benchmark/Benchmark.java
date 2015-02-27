@@ -19,10 +19,10 @@ public class Benchmark {
 	private static void treeBenchmark() throws ClassNotFoundException {
 		com.google.inject.Injector guice = Guice.createInjector();
 
+		// for (Injection i : Injection.values())
+		Injection i = Injection.FIELD;
 		for (Visibility v : Visibility.values()) {
-			// for (Injection i : Injection.values()) {
 			// Visibility v = Visibility.PROTECTED;
-			Injection i = Injection.METHOD;
 
 			TreeConfig config = new TreeConfig(v, i);
 			Class<?> rootClass = Class
