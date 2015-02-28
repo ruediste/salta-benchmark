@@ -1,6 +1,6 @@
 package com.github.ruediste.salta.benchmark;
 
-enum Visibility {
+public enum Visibility {
 	PUBLIC("public"), PACKAGE(""), PROTECTED("protected"), PRIVATE("private");
 	public String keyword;
 

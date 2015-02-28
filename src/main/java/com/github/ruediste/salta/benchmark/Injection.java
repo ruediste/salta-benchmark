@@ -1,5 +1,5 @@
 package com.github.ruediste.salta.benchmark;
 
-enum Injection {
+public enum Injection {
 	METHOD, CONSTRUCTOR, FIELD,
 }
