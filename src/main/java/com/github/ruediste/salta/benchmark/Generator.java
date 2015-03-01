@@ -56,17 +56,20 @@ public class Generator {
 	private static void generateTree() throws IOException {
 		Path target = initDirectory("com.github.ruediste.salta.benchmark.tree");
 
-		for (Visibility v : Visibility.values())
-			for (Injection i : Injection.values()) {
-				TreeConfig config = new TreeConfig(v, i);
-				generateTree(target, 3, config.toString(), config);
-			}
+		// for (Visibility v : Visibility.values())
+		// for (Injection i : Injection.values()) {
+		Visibility v = Visibility.PUBLIC;
+		Injection i = Injection.METHOD;
+		{
+			TreeConfig config = new TreeConfig(v, i);
+			generateTree(target, 3, config.toString(), config);
+		}
 	}
 
 	private static void generateTree(Path target, int depth, String name,
 			TreeConfig config) throws IOException {
 
-		int childCount = 5;
+		int childCount = 10;
 		if (depth > 0)
 			for (int i = 0; i < childCount; i++) {
 				generateTree(target, depth - 1, name + i, config);

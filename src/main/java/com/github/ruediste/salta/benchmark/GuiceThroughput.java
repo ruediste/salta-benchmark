@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import com.google.inject.Guice;
 
 @State(Scope.Thread)
-public class JmhBenchmarkGuice {
+public class GuiceThroughput {
 
 	@Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
 	Injection injection;
@@ -36,8 +36,8 @@ public class JmhBenchmarkGuice {
 
 	@Benchmark
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2)
+	@Measurement(iterations = 10, time = 200, timeUnit = TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(1)
 	public Object measure() throws Throwable {
 		return guice.getInstance(rootClazz);
