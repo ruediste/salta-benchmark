@@ -62,7 +62,7 @@ public class Generator {
 		Injection i = Injection.METHOD;
 		{
 			TreeConfig config = new TreeConfig(v, i);
-			generateTree(target, 3, config.toString(), config);
+			generateTree(target, 2, config.toString(), config);
 		}
 	}
 
@@ -118,7 +118,8 @@ public class Generator {
 	}
 
 	private static Path initDirectory(String pckg) {
-		Path target = Paths.get("src/generated/java/" + pckg.replace('.', '/'));
+		Path target = Paths.get("../generated/src/main/java/"
+				+ pckg.replace('.', '/'));
 		try {
 			if (Files.exists(target))
 				removeRecursive(target);
