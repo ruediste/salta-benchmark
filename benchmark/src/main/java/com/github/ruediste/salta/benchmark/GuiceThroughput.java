@@ -13,6 +13,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 @State(Scope.Thread)
 public class GuiceThroughput {
@@ -23,24 +25,42 @@ public class GuiceThroughput {
 	@Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
 	Visibility visibility;
 
-	private com.google.inject.Injector guice;
+	private com.google.inject.Injector guiceJit;
 
 	private Class<?> rootClazz;
 
+	private Injector guiceBind;
+
 	@Setup
-	public void setup() throws ClassNotFoundException {
+	public void setup() throws Exception {
 		rootClazz = Class.forName("com.github.ruediste.salta.benchmark.tree."
 				+ new TreeConfig(visibility, injection, false));
-		guice = Guice.createInjector();
+		guiceJit = Guice.createInjector();
+
+		Class<?> moduleClass = Class
+				.forName("com.github.ruediste.salta.benchmark.tree."
+						+ new TreeConfig(visibility, injection, true)
+						+ "GuiceBind");
+
+		guiceBind = Guice.createInjector((Module) moduleClass.newInstance());
 	}
 
 	@Benchmark
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
 	@Measurement(iterations = 10, time = 200, timeUnit = TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(1)
-	public Object measure() throws Throwable {
-		return guice.getInstance(rootClazz);
+	public Object jit() throws Throwable {
+		return guiceJit.getInstance(rootClazz);
+	}
+
+	@Benchmark
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Measurement(iterations = 10, time = 200, timeUnit = TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+	@Fork(1)
+	public Object bind() throws Throwable {
+		return guiceBind.getInstance(rootClazz);
 	}
 
 }

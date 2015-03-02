@@ -21,12 +21,12 @@ import com.github.ruediste.salta.standard.Module;
 public class SaltaStartup {
 
 	// @Param({ "FIELD" })
-	@Param({ "METHOD" })
-	// @Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
+	// @Param({ "METHOD" })
+	@Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
 	Injection injection;
 
-	@Param({ "PUBLIC" })
-	// @Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
+	// @Param({ "PUBLIC" })
+	@Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
 	Visibility visibility;
 
 	@Param({ "INVOKE_DYNAMIC" })

@@ -56,22 +56,24 @@ public class Generator {
 	private static void generateTree() throws IOException {
 		Path target = initDirectory("com.github.ruediste.salta.benchmark.tree");
 
-		// for (Visibility v : Visibility.values())
-		// for (Injection i : Injection.values()) {
-		Visibility v = Visibility.PUBLIC;
-		Injection i = Injection.METHOD;
-		{
-			int depth = 3;
-			int childCount = 10;
-			TreeConfig config = new TreeConfig(v, i, false);
-			generateTree(target, depth, childCount, config.toString(), config);
+		for (Visibility v : Visibility.values())
+			for (Injection i : Injection.values())
+			// Visibility v = Visibility.PUBLIC;
+			// Injection i = Injection.METHOD;
+			{
+				int depth = 3;
+				int childCount = 10;
+				TreeConfig config = new TreeConfig(v, i, false);
+				generateTree(target, depth, childCount, config.toString(),
+						config);
 
-			config = new TreeConfig(v, i, true);
-			generateTree(target, depth, childCount, config.toString(), config);
+				config = new TreeConfig(v, i, true);
+				generateTree(target, depth, childCount, config.toString(),
+						config);
 
-			// generate modules
-			generateTreeModules(target, depth, childCount, config);
-		}
+				// generate modules
+				generateTreeModules(target, depth, childCount, config);
+			}
 	}
 
 	private static void generateTreeModules(Path target, int depth,
@@ -117,26 +119,36 @@ public class Generator {
 				generateTree(target, depth - 1, childCount, name + i, config);
 			}
 
+		String implName = name + (config.interfaces ? "Impl" : "");
+
 		BufferedWriter writer = Files.newBufferedWriter(
-				target.resolve(name + (config.interfaces ? "Impl" : "")
-						+ ".java"), Charset.forName("UTF-8"),
+				target.resolve(implName + ".java"), Charset.forName("UTF-8"),
 				StandardOpenOption.CREATE);
 
 		writer.append("package com.github.ruediste.salta.benchmark.tree;\n");
-		writer.append("public class " + name
-				+ (config.interfaces ? "Impl implements " + name : "") + " {");
+		writer.append("public class " + implName
+				+ (config.interfaces ? " implements " + name : "") + " {");
 
 		if (depth > 0)
 			switch (config.injection) {
 			case CONSTRUCTOR:
+				for (int i = 0; i < childCount; i++) {
+					writer.append(config.visibility.keyword + " " + name + i
+							+ " field" + i + ";\n");
+				}
+
 				writer.append("@javax.inject.Inject\n");
-				writer.append(config.visibility.keyword + " " + name + "(");
+				writer.append(config.visibility.keyword + " " + implName + "(");
 				for (int i = 0; i < childCount; i++) {
 					if (i > 0)
 						writer.append(",\n");
 					writer.append(name + i + " arg" + i);
 				}
-				writer.append("){}\n");
+				writer.append("){\n");
+				for (int i = 0; i < childCount; i++) {
+					writer.append("field" + i + "=arg" + i + ";\n");
+				}
+				writer.append("}\n");
 				break;
 			case FIELD:
 				for (int i = 0; i < childCount; i++) {
@@ -147,9 +159,12 @@ public class Generator {
 				break;
 			case METHOD:
 				for (int i = 0; i < childCount; i++) {
+					writer.append(config.visibility.keyword + " " + name + i
+							+ " field" + i + ";\n");
 					writer.append("@javax.inject.Inject\n");
 					writer.append(config.visibility.keyword + " void method"
-							+ i + "(" + name + i + " arg){}\n");
+							+ i + "(" + name + i + " arg){\n" + "field" + i
+							+ "=arg;}\n");
 				}
 				break;
 			default:
