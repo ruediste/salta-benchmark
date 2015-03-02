@@ -41,7 +41,7 @@ public class SaltaThroughput {
 	@Setup
 	public void setup() throws ClassNotFoundException {
 		rootClazz = Class.forName("com.github.ruediste.salta.benchmark.tree."
-				+ new TreeConfig(visibility, injection));
+				+ new TreeConfig(visibility, injection, false));
 		salta = Salta.createInjector(new AbstractModule() {
 
 			@Override

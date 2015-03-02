@@ -15,15 +15,18 @@ import com.github.ruediste.salta.Salta;
 import com.github.ruediste.salta.core.InjectionStrategy;
 import com.github.ruediste.salta.jsr330.JSR330Module;
 import com.github.ruediste.salta.standard.Injector;
+import com.github.ruediste.salta.standard.Module;
 
 @State(Scope.Thread)
 public class SaltaStartup {
 
 	// @Param({ "FIELD" })
-	@Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
+	@Param({ "METHOD" })
+	// @Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
 	Injection injection;
 
-	@Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
+	@Param({ "PUBLIC" })
+	// @Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
 	Visibility visibility;
 
 	@Param({ "INVOKE_DYNAMIC" })
@@ -37,10 +40,10 @@ public class SaltaStartup {
 	// @Warmup(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 	@BenchmarkMode(Mode.SingleShotTime)
 	// @Fork(1)
-	public Object measure() throws Throwable {
+	public Object jit() throws Throwable {
 		Class<?> rootClazz = Class
 				.forName("com.github.ruediste.salta.benchmark.tree."
-						+ new TreeConfig(visibility, injection));
+						+ new TreeConfig(visibility, injection, false));
 		Injector salta = Salta.createInjector(new AbstractModule() {
 
 			@Override
@@ -48,6 +51,33 @@ public class SaltaStartup {
 				getConfiguration().config.injectionStrategy = injectionStrategy;
 			}
 		}, new JSR330Module());
+		return salta.getInstance(rootClazz);
+	}
+
+	@Benchmark
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	// @Measurement(iterations = 10, time = 200, timeUnit =
+	// TimeUnit.MILLISECONDS)
+	// @Warmup(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+	@BenchmarkMode(Mode.SingleShotTime)
+	// @Fork(1)
+	public Object bind() throws Throwable {
+		Class<?> rootClazz = Class
+				.forName("com.github.ruediste.salta.benchmark.tree."
+						+ new TreeConfig(visibility, injection, true));
+
+		Class<?> moduleClass = Class
+				.forName("com.github.ruediste.salta.benchmark.tree."
+						+ new TreeConfig(visibility, injection, true)
+						+ "SaltaBind");
+
+		Injector salta = Salta.createInjector(new AbstractModule() {
+
+			@Override
+			protected void configure() {
+				getConfiguration().config.injectionStrategy = injectionStrategy;
+			}
+		}, (Module) moduleClass.newInstance(), new JSR330Module());
 		return salta.getInstance(rootClazz);
 	}
 

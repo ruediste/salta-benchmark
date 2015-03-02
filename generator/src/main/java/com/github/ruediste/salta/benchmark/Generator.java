@@ -61,26 +61,70 @@ public class Generator {
 		Visibility v = Visibility.PUBLIC;
 		Injection i = Injection.METHOD;
 		{
-			TreeConfig config = new TreeConfig(v, i);
-			generateTree(target, 2, config.toString(), config);
+			int depth = 3;
+			int childCount = 10;
+			TreeConfig config = new TreeConfig(v, i, false);
+			generateTree(target, depth, childCount, config.toString(), config);
+
+			config = new TreeConfig(v, i, true);
+			generateTree(target, depth, childCount, config.toString(), config);
+
+			// generate modules
+			generateTreeModules(target, depth, childCount, config);
 		}
 	}
 
-	private static void generateTree(Path target, int depth, String name,
-			TreeConfig config) throws IOException {
+	private static void generateTreeModules(Path target, int depth,
+			int childCount, TreeConfig config) throws IOException {
+		writeBindingModule(target, depth, childCount, config, config
+				+ "GuiceBind", "import com.google.inject.AbstractModule;");
+		writeBindingModule(target, depth, childCount, config, config
+				+ "SaltaBind",
+				"import com.github.ruediste.salta.AbstractModule;");
+	}
 
-		int childCount = 10;
-		if (depth > 0)
-			for (int i = 0; i < childCount; i++) {
-				generateTree(target, depth - 1, name + i, config);
-			}
-
+	protected static void writeBindingModule(Path target, int depth,
+			int childCount, TreeConfig config, String name, String imports)
+			throws IOException {
 		BufferedWriter writer = Files.newBufferedWriter(
 				target.resolve(name + ".java"), Charset.forName("UTF-8"),
 				StandardOpenOption.CREATE);
 
 		writer.append("package com.github.ruediste.salta.benchmark.tree;\n");
-		writer.append("public class " + name + "{");
+		writer.append(imports + "\n");
+		writer.append("public class " + name + " extends AbstractModule {");
+		writer.append("@Override\n" + "protected void configure() {\n");
+		writeBindings(writer, depth, childCount, config.toString());
+		writer.append("}}");
+		writer.close();
+	}
+
+	private static void writeBindings(BufferedWriter writer, int depth,
+			int childCount, String name) throws IOException {
+
+		writer.append("bind(" + name + ".class).to(" + name + "Impl.class);\n");
+		if (depth > 0)
+			for (int i = 0; i < childCount; i++) {
+				writeBindings(writer, depth - 1, childCount, name + i);
+			}
+	}
+
+	private static void generateTree(Path target, int depth, int childCount,
+			String name, TreeConfig config) throws IOException {
+
+		if (depth > 0)
+			for (int i = 0; i < childCount; i++) {
+				generateTree(target, depth - 1, childCount, name + i, config);
+			}
+
+		BufferedWriter writer = Files.newBufferedWriter(
+				target.resolve(name + (config.interfaces ? "Impl" : "")
+						+ ".java"), Charset.forName("UTF-8"),
+				StandardOpenOption.CREATE);
+
+		writer.append("package com.github.ruediste.salta.benchmark.tree;\n");
+		writer.append("public class " + name
+				+ (config.interfaces ? "Impl implements " + name : "") + " {");
 
 		if (depth > 0)
 			switch (config.injection) {
@@ -115,6 +159,15 @@ public class Generator {
 		writer.append("}");
 
 		writer.close();
+
+		if (config.interfaces) {
+			writer = Files.newBufferedWriter(target.resolve(name + ".java"),
+					Charset.forName("UTF-8"), StandardOpenOption.CREATE);
+
+			writer.append("package com.github.ruediste.salta.benchmark.tree;\n");
+			writer.append("public interface " + name + " {}\n");
+			writer.close();
+		}
 	}
 
 	private static Path initDirectory(String pckg) {
