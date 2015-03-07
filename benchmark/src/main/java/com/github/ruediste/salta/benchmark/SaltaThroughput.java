@@ -24,11 +24,13 @@ public class SaltaThroughput {
 
 	// @Param({ "FIELD" })
 	// @Param({ "METHOD" })
-	@Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
+	@Param({ "CONSTRUCTOR" })
+	// @Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
 	Injection injection;
 
 	// @Param({ "PUBLIC" })
-	@Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
+	@Param({ "PACKAGE" })
+	// @Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
 	Visibility visibility;
 
 	@Param({ "INVOKE_DYNAMIC" })
@@ -69,15 +71,15 @@ public class SaltaThroughput {
 
 	@Benchmark
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Measurement(iterations = 10, time = 200, timeUnit = TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
-	@Fork(1)
+	@Measurement(iterations = 10, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 5, time = 1000, timeUnit = TimeUnit.MILLISECONDS)
+	@Fork(5)
 	public Object jit() throws Throwable {
 
 		return saltaJit.getInstance(rootClazz);
 	}
 
-	@Benchmark
+	// @Benchmark
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
 	@Measurement(iterations = 10, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 	@Warmup(iterations = 5, time = 500, timeUnit = TimeUnit.MILLISECONDS)
