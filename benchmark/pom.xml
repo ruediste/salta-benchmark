@@ -31,10 +31,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.github.ruediste.salta</groupId>
-			<artifactId>salta-core</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
@@ -58,6 +55,11 @@
 		<dependency>
 			<groupId>com.github.ruediste.salta</groupId>
 			<artifactId>salta-benchmark-generated</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ruediste.salta</groupId>
+			<artifactId>salta-jsr330</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
