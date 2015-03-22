@@ -10,12 +10,11 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import com.github.ruediste.salta.AbstractModule;
-import com.github.ruediste.salta.Salta;
 import com.github.ruediste.salta.core.InjectionStrategy;
-import com.github.ruediste.salta.jsr330.JSR330Module;
-import com.github.ruediste.salta.standard.Injector;
-import com.github.ruediste.salta.standard.Module;
+import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste.salta.jsr330.SaltaModule;
 
 @State(Scope.Thread)
 public class SaltaStartup {
@@ -48,9 +47,9 @@ public class SaltaStartup {
 
 			@Override
 			protected void configure() {
-				getConfiguration().config.injectionStrategy = injectionStrategy;
+				getConfiguration().config.config.injectionStrategy = injectionStrategy;
 			}
-		}, new JSR330Module());
+		});
 		return salta.getInstance(rootClazz);
 	}
 
@@ -75,9 +74,9 @@ public class SaltaStartup {
 
 			@Override
 			protected void configure() {
-				getConfiguration().config.injectionStrategy = injectionStrategy;
+				getConfiguration().config.config.injectionStrategy = injectionStrategy;
 			}
-		}, (Module) moduleClass.newInstance(), new JSR330Module());
+		}, (SaltaModule) moduleClass.newInstance());
 		return salta.getInstance(rootClazz);
 	}
 
