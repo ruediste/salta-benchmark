@@ -61,8 +61,8 @@ public class Generator {
 			// Visibility v = Visibility.PUBLIC;
 			// Injection i = Injection.METHOD;
 			{
-				int depth = 3;
-				int childCount = 10;
+				int depth = 2;
+				int childCount = 2;
 				TreeConfig config = new TreeConfig(v, i, false);
 				generateTree(target, depth, childCount, config.toString(),
 						config);
@@ -82,7 +82,7 @@ public class Generator {
 				+ "GuiceBind", "import com.google.inject.AbstractModule;");
 		writeBindingModule(target, depth, childCount, config, config
 				+ "SaltaBind",
-				"import com.github.ruediste.salta.AbstractModule;");
+				"import com.github.ruediste.salta.jsr330.AbstractModule;");
 	}
 
 	protected static void writeBindingModule(Path target, int depth,

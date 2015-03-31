@@ -60,7 +60,6 @@
 		<dependency>
 			<groupId>com.github.ruediste.salta</groupId>
 			<artifactId>salta-jsr330</artifactId>
-			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -81,7 +80,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.openjdk.jmh.Main</mainClass>
+									<mainClass>com.github.ruediste.salta.benchmark.Main</mainClass>
 								</transformer>
 							</transformers>
 							<filters>

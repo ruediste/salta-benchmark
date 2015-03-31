@@ -18,7 +18,7 @@
 		
 		<dependency>
 			<groupId>com.github.ruediste.salta</groupId>
-			<artifactId>salta-core</artifactId>
+			<artifactId>salta-jsr330</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>

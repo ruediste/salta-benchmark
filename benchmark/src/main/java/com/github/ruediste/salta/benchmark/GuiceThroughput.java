@@ -18,11 +18,15 @@ import com.google.inject.Module;
 
 @State(Scope.Thread)
 public class GuiceThroughput {
-
-	@Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
+	// @Param({ "FIELD" })
+	// @Param({ "METHOD" })
+	@Param({ "CONSTRUCTOR" })
+	// @Param({ "METHOD", "CONSTRUCTOR", "FIELD" })
 	Injection injection;
 
-	@Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
+	// @Param({ "PUBLIC" })
+	@Param({ "PACKAGE" })
+	// @Param({ "PUBLIC", "PACKAGE", "PROTECTED", "PRIVATE" })
 	Visibility visibility;
 
 	private com.google.inject.Injector guiceJit;
